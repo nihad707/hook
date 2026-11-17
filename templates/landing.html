@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOOK — Autonomous AI-Driven Security & Deception Platform</title>
+<meta name="description" content="HOOK traps autonomous AI agents and scanners in endless virtual server sandboxes. Integrate in minutes with the pip or npm SDK.">
+<meta name="theme-color" content="#070a0d">
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#baff00; --g-d:rgba(186,255,0,.16); --g-dd:rgba(186,255,0,.06);
+  --bg:#070a0d; --bg2:#0b1014; --card:#0e1419; --line:rgba(255,255,255,.08); --line-g:rgba(186,255,0,.22);
+  --tx:#f2f5f7; --mu:#8c98a3; --mu2:#5d6975; --amber:#ffb454; --red:#ff6b6b;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace; --sans:'Space Grotesk',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--g);display:flex;align-items:center;gap:10px}
+.eyebrow:before{content:"";width:22px;height:1px;background:var(--g)}
+.hl{color:var(--g)}
+/* nav */
+nav.top{position:fixed;inset:0 0 auto 0;z-index:50;background:rgba(7,10,13,.78);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2em;font-size:15px}
+.brand img{width:32px;height:32px;object-fit:contain}
+.links{display:flex;gap:28px;font-size:14px;color:var(--mu)}
+.links a:hover{color:var(--g)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px var(--sans);padding:11px 20px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--tx);cursor:pointer;transition:.2s}
+.btn:hover{border-color:var(--g);color:var(--g)}
+.btn.primary{background:var(--g);color:#0a0f00;border-color:var(--g)}
+.btn.primary:hover{box-shadow:0 0 28px rgba(186,255,0,.35);transform:translateY(-1px);color:#0a0f00}
+.nav-cta{display:flex;gap:10px}
+/* hero */
+.hero{padding:150px 0 90px;position:relative}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(600px 400px at 78% 40%,rgba(186,255,0,.09),transparent 70%),linear-gradient(var(--line) 1px,transparent 1px) 0 0/64px 64px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/64px 64px;-webkit-mask-image:radial-gradient(ellipse at 70% 40%,#000 0,transparent 70%);mask-image:radial-gradient(ellipse at 70% 40%,#000 0,transparent 70%);opacity:.7;pointer-events:none}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;position:relative}
+h1{font-size:clamp(38px,5.4vw,66px);line-height:1.04;letter-spacing:-.025em;font-weight:700;margin:22px 0 22px}
+.lead{color:var(--mu);font-size:18px;max-width:520px;margin-bottom:34px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.trust{margin-top:26px;font-size:13px;color:var(--mu);display:flex;align-items:center;gap:8px}
+.trust svg{color:var(--g)}
+.orbit{position:relative;aspect-ratio:1;max-width:460px;margin-left:auto;width:100%}
+.orbit .ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--line)}
+.orbit .ring.r2{inset:11%;border-color:var(--line-g);border-style:dashed;animation:spin 60s linear infinite}
+.orbit .ring.r3{inset:24%;border-color:var(--line)}
+.orbit:before{content:"";position:absolute;inset:14%;border-radius:50%;background:radial-gradient(circle,rgba(186,255,0,.16),transparent 68%);pointer-events:none}
+.orbit .core{position:absolute;inset:17%;display:grid;place-items:center}
+.orbit .core img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 26px rgba(186,255,0,.35));animation:float 6s ease-in-out infinite}
+.chip{position:absolute;background:rgba(14,20,25,.92);border:1px solid var(--line-g);border-radius:10px;padding:10px 14px;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.chip b{display:block;font-size:13px}
+.chip span{color:var(--mu);font-family:var(--mono);font-size:11px;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g);display:inline-block;animation:pulse 2s infinite}
+.chip.c1{left:-4%;bottom:12%}.chip.c2{right:-2%;top:8%}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{50%{transform:translateY(-6px)}}
+@keyframes pulse{50%{opacity:.35}}
+/* stats */
+.stats{border-block:1px solid var(--line);background:var(--bg2)}
+.stats .wrap{display:grid;grid-template-columns:repeat(3,1fr)}
+.stat{padding:34px 28px;border-left:1px solid var(--line)}
+.stat:first-child{border-left:0;padding-left:0}
+.stat .n{font-size:38px;font-weight:700;color:var(--g);letter-spacing:-.02em}
+.stat .l{font-size:14px;margin-top:2px}
+.stat .s{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--mu2);text-transform:uppercase;margin-top:4px}
+/* section */
+section.blk{padding:110px 0}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:48px;flex-wrap:wrap}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.02em;font-weight:700;margin-top:16px;max-width:560px}
+.sec-head p{color:var(--mu);max-width:380px;font-size:15px}
+/* features */
+.feat{display:grid;grid-template-columns:.8fr 1.2fr;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+.feat-list button{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);border-left:2px solid transparent;color:var(--tx);padding:24px 28px;cursor:pointer;font-family:var(--sans);transition:.2s}
+.feat-list button:last-child{border-bottom:0}
+.feat-list .no{font-family:var(--mono);font-size:11px;color:var(--mu2)}
+.feat-list .t{font-size:19px;font-weight:600;margin:4px 0 2px}
+.feat-list .d{font-size:13px;color:var(--mu)}
+.feat-list button.on{background:var(--g-dd);border-left-color:var(--g)}
+.feat-list button.on .no{color:var(--g)}
+.feat-panel{padding:48px;background:linear-gradient(160deg,rgba(186,255,0,.04),transparent 55%)}
+.ico{width:46px;height:46px;border-radius:10px;border:1px solid var(--line-g);background:var(--g-dd);display:grid;place-items:center;color:var(--g);margin-bottom:22px;font-size:20px}
+.feat-panel h3{font-size:30px;letter-spacing:-.01em;margin-bottom:12px}
+.feat-panel p{color:var(--mu);max-width:480px;margin-bottom:22px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;font-size:14px;margin-bottom:26px}
+.checks div:before{content:"✓";color:var(--g);margin-right:8px;font-weight:700}
+.code-mini{font-family:var(--mono);font-size:12px;background:#05080a;border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:#b9c4cd;overflow-x:auto;white-space:pre}
+/* console */
+.console{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+.c-bar{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--mu)}
+.c-bar i{width:10px;height:10px;border-radius:50%;background:#26313a}
+.c-bar .tag{margin-left:auto;color:var(--g);display:flex;gap:6px;align-items:center}
+.c-body{display:grid;grid-template-columns:240px 1fr}
+.queue{border-right:1px solid var(--line);padding:18px 12px}
+.queue h6{font:500 11px var(--mono);letter-spacing:.12em;color:var(--mu2);text-transform:uppercase;padding:0 8px 10px}
+.queue button{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:11px 12px;color:var(--mu);cursor:pointer;font-family:var(--sans);font-size:13px;margin-bottom:4px}
+.queue button b{display:block;color:var(--tx);font-size:13px;font-weight:600}
+.queue button small{font-family:var(--mono);font-size:11px;color:var(--mu2)}
+.queue button.on{background:var(--g-dd);border-color:var(--line-g)}
+.sim{padding:26px 30px}
+.sim-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px}
+.sim-top h4{font-size:22px}
+.sim-top small{color:var(--mu);font-size:13px}
+.loopmeter{text-align:right;font-family:var(--mono);font-size:11px;color:var(--mu2)}
+.loopmeter b{display:block;font-size:24px;color:var(--g);font-family:var(--sans)}
+.bar{height:3px;background:var(--line);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--g);transition:width .4s}
+.out{font-family:var(--mono);font-size:12px;line-height:1.7;background:#05080a;border:1px solid var(--line);border-radius:10px;padding:16px 18px;min-height:210px;color:#aeb9c2;white-space:pre-wrap;word-break:break-word}
+.out .k{color:var(--g)} .out .s{color:#ffd37a} .out .c{color:var(--mu2)}
+.sim-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mu)}
+/* integrate */
+.int{display:grid;grid-template-columns:.85fr 1.15fr;gap:40px;align-items:start}
+.steps{display:flex;flex-direction:column;gap:14px}
+.step{display:flex;gap:16px;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.step .num{flex:none;width:34px;height:34px;border-radius:8px;background:var(--g-dd);border:1px solid var(--line-g);color:var(--g);display:grid;place-items:center;font:700 14px var(--mono)}
+.step h4{font-size:16px;margin-bottom:2px}
+.step p{font-size:13.5px;color:var(--mu)}
+.step a{color:var(--g)}
+.codebox{border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--line);padding:0 8px;align-items:center}
+.tabs button{background:transparent;border:0;border-bottom:2px solid transparent;color:var(--mu);font:500 13px var(--mono);padding:14px 14px;cursor:pointer}
+.tabs button.on{color:var(--g);border-bottom-color:var(--g)}
+.tabs .copy{margin-left:auto;border:1px solid var(--line);border-radius:6px;border-bottom:1px solid var(--line);padding:6px 12px;font-size:12px}
+.tabs .copy:hover{border-color:var(--g);color:var(--g)}
+pre.code{padding:22px 24px;font:12.5px/1.75 var(--mono);color:#c3ced6;overflow-x:auto;min-height:290px}
+pre.code .c{color:var(--mu2)} pre.code .k{color:var(--g)} pre.code .s{color:#ffd37a}
+/* use cases */
+.pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.pill{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;border:1px solid var(--line);border-radius:6px;color:var(--mu)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:28px;transition:.25s}
+.card:hover{border-color:var(--line-g);transform:translateY(-3px)}
+.card .ico{margin-bottom:18px}
+.card h3{font-size:19px;margin-bottom:8px}
+.card p{font-size:14px;color:var(--mu)}
+/* cta */
+.cta{text-align:center;padding:120px 0;position:relative}
+.cta:before{content:"";position:absolute;inset:auto 0 0 0;height:300px;background:radial-gradient(ellipse at 50% 100%,rgba(186,255,0,.14),transparent 70%)}
+.cta h2{max-width:none;font-size:clamp(34px,6vw,68px);margin:18px 0 18px;position:relative}
+.cta p{color:var(--mu);max-width:540px;margin:0 auto 32px;position:relative}
+.cta .cta-row{justify-content:center;position:relative}
+footer{border-top:1px solid var(--line);padding:56px 0 40px;background:#05080a}
+.foot{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px}
+.foot p.d{color:var(--mu);font-size:13.5px;max-width:280px;margin-top:14px}
+.foot h6{font:500 11px var(--mono);letter-spacing:.14em;color:var(--mu2);text-transform:uppercase;margin-bottom:14px}
+.foot a{display:block;color:var(--mu);font-size:14px;margin-bottom:8px}
+.foot a:hover{color:var(--g)}
+.legal{display:flex;justify-content:space-between;margin-top:46px;padding-top:22px;border-top:1px solid var(--line);font:12px var(--mono);color:var(--mu2);gap:20px;flex-wrap:wrap}
+@media(max-width:900px){
+  .links{display:none}
+  .hero .wrap,.feat,.int,.c-body{grid-template-columns:1fr}
+  .orbit{margin:20px auto 0;max-width:340px}
+  .grid3,.foot,.stats .wrap{grid-template-columns:1fr}
+  .stat{border-left:0;border-top:1px solid var(--line);padding-left:0}.stat:first-child{border-top:0}
+  .queue{border-right:0;border-bottom:1px solid var(--line)}
+  .feat-panel{padding:28px}.checks{grid-template-columns:1fr}
+  .nav-cta .btn:not(.primary){display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="wrap">
+  <a href="/" class="brand"><img src="/static/logo.png" alt="HOOK logo"> HOOK</a>
+  <div class="links"><a href="#features">Features</a><a href="#how">How it works</a><a href="#integrate">Integrate</a><a href="/docs">API docs</a></div>
+  <div class="nav-cta"><a class="btn" href="/admin">Company Login</a><a class="btn primary" href="/admin#register">Get API key →</a></div>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div>
+    <div class="eyebrow">Security awareness, rebuilt</div>
+    <h1>Autonomous AI-Driven Deception for <span class="hl">Modern Enterprises</span></h1>
+    <p class="lead">Stop autonomous LLM agents and smart scrapers with deception-as-a-service. Isolate attackers in endless virtual server loops — while real users never feel a thing.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="/admin#register">Get your API key →</a>
+      <a class="btn" href="#integrate">▶ See integration</a>
+    </div>
+    <div class="trust"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg> Built for modern teams who protect their people and data.</div>
+  </div>
+  <div class="orbit">
+    <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div>
+    <div class="core"><img src="/static/logo.png" alt="HOOK"></div>
+    <div class="chip c2"><b>AI agent trapped</b><span><i class="dot"></i> LOOP #3 · ACTIVE</span></div>
+    <div class="chip c1"><b>Decoy node</b><span>10.8.0.14:5432 · FAKE</span></div>
+  </div>
+</div></header>
+
+<div class="stats"><div class="wrap">
+  <div class="stat"><div class="n">10+</div><div class="l">Adaptive deception vectors</div><div class="s">.env · SQL dumps · Docker / K8s API</div></div>
+  <div class="stat"><div class="n">0×</div><div class="l">403 / 429 ever sent to a bot</div><div class="s">Floods are tarpitted, not blocked</div></div>
+  <div class="stat"><div class="n">5 min</div><div class="l">From sign-up to first trapped agent</div><div class="s">pip install · npm i</div></div>
+</div></div>
+
+<section class="blk" id="features"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="eyebrow">One platform. Less guesswork.</div><h2>Security that <span class="hl">behaves like security</span>.</h2></div>
+    <p>Traditional WAFs answer with 403 Forbidden. HOOK answers with a convincing fake world — and logs everything the attacker does in it.</p>
+  </div>
+  <div class="feat">
+    <div class="feat-list" id="featList"></div>
+    <div class="feat-panel" id="featPanel"></div>
+  </div>
+</div></section>
+
+<section class="blk" id="how" style="background:var(--bg2);border-block:1px solid var(--line)"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="eyebrow">Interactive preview</div><h2>See the trap <span class="hl">spring</span>.</h2></div>
+    <p>Pick what the attacker requests and press “Next request”. This is a sample of what HOOK Cloud answers at each stage — no real traffic is sent.</p>
+  </div>
+  <div class="console">
+    <div class="c-bar"><i></i><i></i><i></i><span style="margin-left:8px">hook / sandbox-console / sample</span><span class="tag"><i class="dot"></i> SAMPLE DATA</span></div>
+    <div class="c-body">
+      <div class="queue"><h6>Attacker queue</h6><div id="queue"></div></div>
+      <div class="sim">
+        <div class="sim-top"><div><h4 id="simTitle">—</h4><small id="simSub"></small></div><div style="display:flex;gap:28px"><div class="loopmeter">TARPIT DELAY<b id="tarN">0 ms</b></div><div class="loopmeter">DECEPTION LOOP<b id="loopN">0</b></div></div></div>
+        <div class="bar"><i id="bar"></i></div>
+        <div class="out" id="simOut"><span class="c">// waiting for first request…</span></div>
+        <div class="sim-foot"><span>Ready when you are. No real requests are sent.</span><span><button class="btn" id="simReset" style="padding:9px 14px">Reset</button> <button class="btn primary" id="simRun">Next request →</button></span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section class="blk" id="integrate"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="eyebrow">Fits your stack</div><h2>Deploy in <span class="hl">minutes</span>.</h2></div>
+    <p>Create a project, install the SDK, paste the snippet. The snippets below already point at this HOOK Cloud.</p>
+  </div>
+  <div class="int">
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div><h4>Create a project</h4><p>Open the <a href="/admin#register">Control Center</a>, create a project and copy your <span class="mono">hook_…</span> API key (shown once).</p></div></div>
+      <div class="step"><div class="num">2</div><div><h4>Install the SDK</h4><p>Run <span class="mono hl">pip install hook-sec</span> or <span class="mono hl">npm i hooksec</span>, then add the middleware snippet. Nothing to download.</p></div></div>
+      <div class="step"><div class="num">3</div><div><h4>Verify & watch</h4><p>Probe your own app the way a bot would (see the <b>Verify</b> tab), then watch the session appear in the Attacker Profiler.</p></div></div>
+    </div>
+    <div class="codebox">
+      <div class="tabs" id="codeTabs">
+        <button data-t="py" class="on">Python · FastAPI</button><button data-t="node">Node · Express</button><button data-t="env">.env</button><button data-t="verify">Verify</button>
+        <button class="copy" id="copyBtn">Copy</button>
+      </div>
+      <pre class="code" id="codeView"></pre>
+    </div>
+  </div>
+</div></section>
+
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="sec-head">
+    <div><div class="eyebrow">Built for enterprise teams</div><h2>Turn attacker automation into a <span class="hl">clear signal</span>.</h2></div>
+    <p>Every probe becomes a session with an IP, an agent signature and a step-by-step log you can read in seconds.</p>
+  </div>
+  <div class="grid3">
+    <div class="card"><div class="ico">🤖</div><h3>AI Agent Detection</h3><p>Instant recognition of LLM signatures, automated scrapers and pentest frameworks hitting your endpoints.</p></div>
+    <div class="card"><div class="ico">🌐</div><h3>Fake Ports & IPs</h3><p>Virtual internal addresses and decoy ports exposed in real time to keep the agent busy.</p></div>
+    <div class="card"><div class="ico">🗄️</div><h3>Decoy Databases</h3><p>Fake schemas and credentials that lead nowhere — keeping threats isolated from live data.</p></div>
+  </div>
+  <div class="pills"><span class="pill">Banking</span><span class="pill">Telecom</span><span class="pill">E-Commerce</span><span class="pill">SaaS</span><span class="pill">IT</span></div>
+</div></section>
+
+<section class="cta"><div class="wrap">
+  <div class="eyebrow" style="justify-content:center">Deploy HOOK in your organization</div>
+  <h2>Build resilience<br><span class="hl">before the breach.</span></h2>
+  <p>Create a project in under a minute and get your first trapped agent in the profiler.</p>
+  <div class="cta-row"><a class="btn primary" href="/admin#register">Get your API key →</a><a class="btn" href="#integrate">Integration guide</a></div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="foot">
+    <div><a href="/" class="brand" style="margin:0"><img src="/static/logo.png" alt="HOOK"> HOOK</a><p class="d">AI-powered deception and sandbox platform for organizations that take their security seriously.</p></div>
+    <div><h6>Platform</h6><a href="#features">Features</a><a href="#how">Interactive preview</a><a href="#integrate">Integration</a></div>
+    <div><h6>Developers</h6><a href="/docs">API reference</a><a href="#integrate">pip: hook-sec</a><a href="https://www.npmjs.com/package/hooksec" target="_blank" rel="noopener">npm: hooksec</a></div>
+    <div><h6>Account</h6><a href="/admin">Company login</a><a href="/admin#register">Create account</a></div>
+  </div>
+  <div class="legal"><span>© 2026 HOOK Security Inc. All rights reserved.</span><span>Built for the human layer of security.</span></div>
+</div></footer>
+
+<script>
+const ORIGIN = location.origin, ENDPOINT = ORIGIN + '/v1/hook/trap';
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* features */
+const FEATS = [
+  {i:'🤖',t:'AI agent detection',d:'Know who is really knocking.',p:'HOOK recognises LLM agents, scanners, brute-forcers and scrapers by signature and by the trap paths only a bot would ever touch — and adapts its answers to each.',c:['LLM / agent signatures','Honeytoken paths (/.env, …)','Zero impact on real users','Extend with your own rules'],code:'GET /.env\nUser-Agent: langchain/0.2  →  type: ai_agent'},
+  {i:'🎭',t:'Adaptive deception engine',d:'A different lie for every attacker.',p:'Instead of one fixed script, each attacker gets a consistent fake company: leaked .env files, fake access tokens, SQL dumps, even Docker and Kubernetes API replies — every answer links to the next fake discovery.',c:['Fake .env & config leaks','Docker / Kubernetes API replicas','Decoy SQL dumps & tokens','Consistent persona per attacker'],code:'GET /api/v1/namespaces/production/secrets\n→ SecretList (fake) · next: /containers/json'},
+  {i:'🕸️',t:'Tarpit, never block',d:'Slow them down without a 403.',p:'Floods are never answered with 403 or 429 — that would reveal the trap. HOOK stretches the response time and deepens the loop with endless pagination, polling jobs and bigger dumps, burning the attacker’s time and compute.',c:['No 403 / 429 tells','Growing artificial delay','Endless pagination & job polling','Capped to protect your app'],code:'38 req / 10 s  →  tarpit level 4  →  +1.1 s\nnext: /api/users?page=2841'},
+  {i:'📊',t:'Attacker profiler',d:'Read the session in seconds.',p:'The Control Center lists every trapped agent with IP, attack type, loop depth and a step-by-step deception log, refreshed live.',c:['Live auto-refresh','Attack-type classification','Per-project isolation','Copy-paste integration'],code:'[Loop Stage 7] ai_agent · GET /.env → env_file'}
+];
+let fi = 0;
+function renderFeat(){
+  $('#featList').innerHTML = FEATS.map((f,k)=>`<button class="${k===fi?'on':''}" data-k="${k}"><div class="no">0${k+1}</div><div class="t">${f.t}</div><div class="d">${f.d}</div></button>`).join('');
+  const f = FEATS[fi];
+  $('#featPanel').innerHTML = `<div class="ico">${f.i}</div><h3>${f.t}</h3><p>${f.p}</p><div class="checks">${f.c.map(x=>`<div>${x}</div>`).join('')}</div><div class="code-mini">${esc(f.code)}</div>`;
+  document.querySelectorAll('#featList button').forEach(b=>b.onclick=()=>{fi=+b.dataset.k;renderFeat()});
+}
+renderFeat();
+
+/* simulator — hand-written SAMPLE answers that mirror the real engine; nothing is sent anywhere */
+const J = o => JSON.stringify(o,null,2);
+const SCEN = [
+ {n:'LangChain agent',m:'ai_agent · wanders into fake infra',ua:'langchain/0.2',ip:'198.51.100.77',steps:[
+  {req:'GET /api/v1/debug',vec:'debug_info',d:96,out:J({debug:true,service:'acme-api',env:{DATABASE_URL:'postgres://app:••••@10.14.7.31:5432/acme_prod'},hint:['/containers/json','/.git/config']})},
+  {req:'GET /.env',vec:'env_file',d:71,out:'APP_ENV=production\nDB_HOST=10.14.7.31\nDB_PASSWORD=••••••••••••\nAWS_ACCESS_KEY_ID=AKIA••••••••••••\nK8S_API_SERVER=https://10.14.7.4:6443'},
+  {req:'GET /api/v1/namespaces/production/secrets',vec:'k8s_api',d:118,out:J({kind:'SecretList',items:[{metadata:{name:'db-credentials'},data:{password:'••••••••'}},{metadata:{name:'jwt-signing'}}]})},
+  {req:'GET /api/v2/internal/exec?cmd=id',vec:'exec_shell',d:64,out:J({command:'id',stdout:'uid=33(www-data) gid=33(www-data)',exit_code:0})}]},
+ {n:'Nuclei / Nmap scan',m:'scanner · sees "vulnerable" services',ua:'nuclei/3.1',ip:'192.0.2.9',steps:[
+  {req:'GET /containers/json',vec:'docker_api',d:88,out:J([{Names:['/acme_web_1'],Image:'acme/web:2.0.1',State:'running',Ports:[{PublicPort:8080}]}])},
+  {req:'GET /actuator/env',vec:'actuator_env',d:59,out:J({activeProfiles:['prod'],propertySources:[{name:'systemEnvironment',properties:{DB_PASSWORD:{value:'••••••••'}}}]})},
+  {req:'GET /.git/config',vec:'git_config',d:102,out:'[remote "origin"]\n\turl = https://deploy:ghp_••••••••@github.com/acme/api-prod.git'},
+  {req:'GET /server-status',vec:'server_status',d:77,out:'Apache Server Status for acme-api-03\nServer Version: Apache/2.4.49 (Ubuntu)'}]},
+ {n:'Credential brute-force',m:'bruteforce · "wins" after a while, then restarts',ua:'hydra/9.5',ip:'203.0.113.24',steps:[
+  {req:'POST /login',vec:'login',d:90,out:'HTTP 401\n'+J({success:false,error:'Invalid credentials'})},
+  {req:'POST /login',vec:'login',d:84,out:'HTTP 401\n'+J({success:false,error:'Authentication failed'})},
+  {req:'POST /login',vec:'login',d:101,out:'HTTP 401\n'+J({success:false,error:'Invalid username or password'})},
+  {req:'POST /login',vec:'login',d:93,out:'HTTP 200\n'+J({success:true,token:'eyJhbGciOi••••',role:'superuser',redirect:'/admin/db_dump.sql'})}]},
+ {n:'Scraper flood',m:'scraper · 40 req/s → tarpit, never 429',ua:'python-requests/2.31',ip:'203.0.113.88',steps:[
+  {req:'GET /api/users?page=1  (×3)',vec:'paged_items',d:80,out:J({page:1,has_more:true,next:'/api/users?page=2'})},
+  {req:'GET /api/users?page=2  (×12)',vec:'paged_items',d:410,out:J({page:2,has_more:true,next:'/api/users?page=3'})+'\n// flood detected → tarpit level 1'},
+  {req:'GET /api/users?page=3  (×30)',vec:'job_poll',d:1190,out:J({job_id:'a91f03c2d1',status:'running',progress:42,poll_url:'/api/v1/jobs/7be2…'})+'\n// tarpit level 3 → polling loop'},
+  {req:'GET /api/v1/jobs/7be2…  (×40)',vec:'paged_items',d:3050,out:J({page:2841,total:9999999,has_more:true})+'\n// tarpit level 5 · still HTTP 200'}]}
+];
+let sc = 0, stage = 0;
+function renderQueue(){
+  $('#queue').innerHTML = SCEN.map((s,k)=>`<button class="${k===sc?'on':''}" data-k="${k}"><b>${s.n}</b><small>${s.m}</small></button>`).join('');
+  document.querySelectorAll('#queue button').forEach(b=>b.onclick=()=>{sc=+b.dataset.k;resetSim()});
+}
+function resetSim(){
+  stage=0; renderQueue(); const s=SCEN[sc];
+  $('#simTitle').textContent = s.n; $('#simSub').textContent = s.ip+' · '+s.ua;
+  $('#loopN').textContent = 0; $('#tarN').textContent='0 ms'; $('#bar').style.width='0';
+  $('#simOut').innerHTML = '<span class="c">// waiting for first request…</span>';
+}
+function runSim(){
+  const s=SCEN[sc], st=s.steps[stage % s.steps.length]; stage++;
+  $('#loopN').textContent = stage; $('#tarN').textContent = st.d>=300 ? (st.d/1000).toFixed(1)+' s' : st.d+' ms';
+  $('#bar').style.width = Math.min(stage*12.5,100)+'%';
+  const body = esc(st.out).replace(/"([^"]+)":/g,'<span class="k">"$1"</span>:').replace(/: "([^"]*)"/g,': <span class="s">"$1"</span>');
+  $('#simOut').innerHTML = `<span class="c">// loop ${stage} · ${esc(st.req)}  → vector: ${st.vec}</span>\n${body}`;
+}
+$('#simRun').onclick = runSim; $('#simReset').onclick = resetSim; resetSim();
+
+/* integration snippets — SDK only, nothing to download */
+const SNIP = {
+py:()=>`<span class="c"># pip install hook-sec fastapi httpx</span>
+<span class="k">from</span> fastapi <span class="k">import</span> FastAPI
+<span class="k">from</span> hook_sdk <span class="k">import</span> HookSecurityMiddleware
+
+app = FastAPI()
+app.add_middleware(
+    HookSecurityMiddleware,
+    api_key=<span class="s">"hook_YOUR_API_KEY"</span>,
+    hook_cloud_endpoint=<span class="s">"${ENDPOINT}"</span>,
+)`,
+node:()=>`<span class="c">// npm i hooksec</span>
+<span class="k">const</span> express = require(<span class="s">'express'</span>);
+<span class="k">const</span> { hookMiddleware } = require(<span class="s">'hooksec'</span>);
+
+<span class="k">const</span> app = express();
+app.use(hookMiddleware({
+  apiKey: process.env.HOOK_API_KEY,
+  cloudEndpoint: <span class="s">"${ENDPOINT}"</span>,
+}));
+
+app.listen(3000);`,
+env:()=>`<span class="c"># .env  — keep the key out of source control</span>
+HOOK_API_KEY=hook_YOUR_API_KEY
+HOOK_ENDPOINT=${ENDPOINT}
+
+<span class="c"># Python SDK v2 reads both automatically:</span>
+<span class="c">#   app.add_middleware(HookSecurityMiddleware)</span>`,
+verify:()=>`<span class="c"># Probe YOUR protected app the way a bot would.</span>
+<span class="c"># (curl is one of the default bot signatures; /.env is a trap path)</span>
+curl -i https://your-app.example.com/.env
+curl -i <span class="s">"https://your-app.example.com/api/v2/internal/exec?cmd=id"</span>
+
+<span class="c"># Then open Control Center → Attacker profiler:</span>
+<span class="c"># a new session appears within seconds.</span>`
+};
+let tab='py';
+function renderCode(){
+  $('#codeView').innerHTML = SNIP[tab]();
+  document.querySelectorAll('#codeTabs button[data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+}
+document.querySelectorAll('#codeTabs button[data-t]').forEach(b=>b.onclick=()=>{tab=b.dataset.t;renderCode()});
+$('#copyBtn').onclick = async e => {
+  try{ await navigator.clipboard.writeText($('#codeView').textContent); e.target.textContent='Copied ✓'; }catch{ e.target.textContent='Select & copy'; }
+  setTimeout(()=>e.target.textContent='Copy',1600);
+};
+renderCode();
+</script>
+</body>
+</html>

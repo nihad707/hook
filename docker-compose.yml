@@ -1,0 +1,62 @@
+# One command:   cp .env.example .env  &&  (edit HOOK_SECRET_KEY)  &&  docker compose up --build
+name: hook-cloud
+
+x-app-env: &app-env
+  HOOK_ENV: production
+  HOOK_SECRET_KEY: ${HOOK_SECRET_KEY:?set HOOK_SECRET_KEY in .env (>= 16 random chars)}
+  DATABASE_URL: postgresql://hook:${POSTGRES_PASSWORD:-hook_dev_password}@postgres:5432/hook
+  REDIS_URL: redis://redis:6379/0
+  WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hook
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hook_dev_password}
+      POSTGRES_DB: hook
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hook -d hook"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # attacker state is disposable (TTL) -> no persistence, bounded memory
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "256mb", "--maxmemory-policy", "volatile-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:                      # runs `alembic upgrade head` once and exits; the app starts only after it succeeded
+    build: .
+    command: ["alembic", "upgrade", "head"]
+    environment: *app-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      <<: *app-env
+      PORT: "8080"
+    ports:
+      - "${PORT:-8080}:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:

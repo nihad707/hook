@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOOK Cloud — Control Center</title>
+<meta name="theme-color" content="#070a0d">
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#baff00; --g-dd:rgba(186,255,0,.07); --g-d:rgba(186,255,0,.16);
+  --bg:#070a0d; --bg2:#0b1014; --card:#0e1419; --line:rgba(255,255,255,.08); --line-g:rgba(186,255,0,.24);
+  --tx:#f2f5f7; --mu:#8c98a3; --mu2:#5d6975; --amber:#ffb454; --red:#ff6b6b;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace; --sans:'Space Grotesk',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh;line-height:1.5}
+a{color:inherit;text-decoration:none}
+.hidden{display:none!important}
+.mono{font-family:var(--mono)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 13.5px var(--sans);padding:10px 18px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--tx);cursor:pointer;transition:.2s;white-space:nowrap}
+.btn:hover{border-color:var(--g);color:var(--g)}
+.btn.primary{background:var(--g);border-color:var(--g);color:#0a0f00}
+.btn.primary:hover{box-shadow:0 0 24px rgba(186,255,0,.35);color:#0a0f00}
+.btn.sm{padding:6px 12px;font-size:12px}
+.btn.danger:hover{border-color:var(--red);color:var(--red)}
+input,select{width:100%;background:#05080a;border:1px solid var(--line);border-radius:8px;padding:11px 14px;color:var(--tx);font:14px var(--sans);outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--g);box-shadow:0 0 0 3px var(--g-dd)}
+label{display:block;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+.eyebrow{font:12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--g);display:flex;align-items:center;gap:10px}
+.eyebrow:before{content:"";width:22px;height:1px;background:var(--g)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g);display:inline-block}
+.dot.live{animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.3}}
+
+/* top bar */
+header.bar{position:sticky;top:0;z-index:30;background:rgba(7,10,13,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header.bar .in{max-width:1320px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2em;font-size:14px}
+.brand img{width:30px;height:30px;border-radius:8px}
+.badge{font:500 10px var(--mono);letter-spacing:.1em;color:var(--g);border:1px solid var(--line-g);background:var(--g-dd);padding:3px 8px;border-radius:5px;text-transform:uppercase}
+.sp{flex:1}
+.nav-link{font-size:13px;color:var(--mu);padding:8px 10px}.nav-link:hover{color:var(--g)}
+.user{position:relative}
+.user-btn{display:flex;align-items:center;gap:10px;background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 5px;color:var(--tx);cursor:pointer;font:13px var(--sans)}
+.user-btn:hover{border-color:var(--g)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--g);color:#0a0f00;display:grid;place-items:center;font:700 12px var(--sans)}
+.menu{position:absolute;right:0;top:46px;min-width:230px;background:var(--card);border:1px solid var(--line-g);border-radius:12px;padding:8px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.menu .who{padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.menu .who small{display:block;font:11px var(--mono);color:var(--mu2)}
+.menu .who span{font-size:13px;word-break:break-all}
+.menu button,.menu a{display:flex;width:100%;text-align:left;background:transparent;border:0;color:var(--tx);padding:10px 12px;border-radius:8px;cursor:pointer;font:13px var(--sans);gap:10px}
+.menu button:hover,.menu a:hover{background:var(--g-dd);color:var(--g)}
+.menu .out:hover{background:rgba(255,107,107,.1);color:var(--red)}
+
+/* auth */
+.auth{min-height:calc(100vh - 62px);display:grid;grid-template-columns:1fr 1fr;align-items:center;max-width:1180px;margin:0 auto;padding:40px 24px;gap:60px}
+.auth h1{font-size:clamp(34px,4.5vw,54px);line-height:1.05;letter-spacing:-.025em;margin:18px 0}
+.auth h1 span{color:var(--g)}
+.auth .sub{color:var(--mu);max-width:440px;margin-bottom:28px}
+.perks{display:grid;gap:12px;font-size:14px}
+.perks div:before{content:"✓";color:var(--g);margin-right:10px;font-weight:700}
+.auth-card{padding:34px;position:relative;overflow:hidden}
+.auth-card:before{content:"";position:absolute;inset:-40% -20% auto auto;width:320px;height:320px;background:radial-gradient(circle,rgba(186,255,0,.12),transparent 70%);pointer-events:none}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:#05080a;border:1px solid var(--line);border-radius:10px;padding:4px;margin-bottom:24px}
+.seg button{background:transparent;border:0;color:var(--mu);padding:9px;border-radius:7px;font:600 13px var(--sans);cursor:pointer}
+.seg button.on{background:var(--g);color:#0a0f00}
+.field{margin-bottom:16px;position:relative}
+.eye{position:absolute;right:10px;bottom:8px;background:transparent;border:0;color:var(--mu);cursor:pointer;font:11px var(--mono);padding:4px 6px}
+.err{color:var(--red);font-size:13px;min-height:20px;margin-top:10px}
+.ok{color:var(--g)}
+
+/* layout */
+.shell{max-width:1320px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:290px 1fr;gap:22px;align-items:start}
+.side{padding:20px;position:sticky;top:86px}
+.side h6{font:500 11px var(--mono);letter-spacing:.14em;color:var(--mu2);text-transform:uppercase;margin-bottom:12px}
+.proj{display:block;width:100%;text-align:left;background:#05080a;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;color:var(--tx);transition:.2s;font-family:var(--sans)}
+.proj:hover{border-color:var(--line-g)}
+.proj.on{border-color:var(--g);background:var(--g-dd)}
+.proj b{display:block;font-size:14px}
+.proj small{font:11px var(--mono);color:var(--mu2)}
+.newp{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);display:grid;gap:10px}
+.empty{color:var(--mu2);font-size:13px;padding:6px 2px 14px}
+.keybanner{border:1px solid var(--g);background:var(--g-dd);border-radius:14px;padding:18px 22px;margin-bottom:20px}
+.keybanner .row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.keybanner code{flex:1;min-width:240px;font:13px var(--mono);background:#05080a;border:1px solid var(--line);padding:10px 14px;border-radius:8px;color:#fff;user-select:all;word-break:break-all}
+.keybanner p{font-size:13px;color:var(--mu)}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:20px;flex-wrap:wrap}
+.head h2{font-size:30px;letter-spacing:-.02em;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat{padding:18px 20px}
+.stat .n{font-size:30px;font-weight:700;color:var(--g);letter-spacing:-.02em;line-height:1.1}
+.stat .l{font:11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mu2);margin-top:6px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:0;padding:0 10px}
+.tabs button{background:transparent;border:0;border-bottom:2px solid transparent;color:var(--mu);font:500 13px var(--mono);padding:15px 16px;cursor:pointer}
+.tabs button.on{color:var(--g);border-bottom-color:var(--g)}
+.pane{padding:22px}
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.toolbar input{max-width:280px}
+.switch{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mu);cursor:pointer;user-select:none}
+.switch input{width:auto;accent-color:#baff00}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mu2);padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:14px 12px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top}
+tr:hover td{background:rgba(186,255,0,.02)}
+.ip{font:12.5px var(--mono);color:var(--g)}
+.ua{font:12px var(--mono);color:#c2ccd3;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.atype{font:600 11px var(--mono);padding:4px 9px;border-radius:6px;background:var(--g-dd);color:var(--g);border:1px solid var(--line-g);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+.atype.scanner{color:#7cc4ff;background:rgba(124,196,255,.08);border-color:rgba(124,196,255,.28)}
+.atype.bruteforce{color:#ff9c9c;background:rgba(255,107,107,.08);border-color:rgba(255,107,107,.28)}
+.atype.scraper{color:#d6a8ff;background:rgba(214,168,255,.08);border-color:rgba(214,168,255,.28)}
+.atype.probe,.atype.unknown{color:var(--mu);background:transparent;border-color:var(--line)}
+.tp{font:11px var(--mono);color:var(--amber);margin-left:4px;white-space:nowrap}
+.loop{font:700 11px var(--mono);padding:4px 10px;border-radius:999px;background:rgba(255,180,84,.12);color:var(--amber);border:1px solid rgba(255,180,84,.3);white-space:nowrap}
+.log{font:11.5px/1.7 var(--mono);color:#98a4ae;white-space:pre-wrap;word-break:break-word;max-width:520px}
+.more{background:transparent;border:0;color:var(--g);font:11px var(--mono);cursor:pointer;padding:4px 0}
+.tbl-wrap{overflow-x:auto}
+.placeholder{text-align:center;padding:50px 20px;color:var(--mu)}
+.placeholder b{display:block;color:var(--tx);font-size:16px;margin-bottom:4px}
+pre.code{background:#05080a;border:1px solid var(--line);border-radius:10px;padding:18px 20px;font:12.5px/1.75 var(--mono);color:#c3ced6;overflow-x:auto;white-space:pre}
+pre.code .c{color:var(--mu2)} pre.code .k{color:var(--g)} pre.code .s{color:#ffd37a}
+.codehead{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.chipb{background:transparent;border:1px solid var(--line);color:var(--mu);font:500 12px var(--mono);padding:7px 13px;border-radius:6px;cursor:pointer}
+.chipb.on{border-color:var(--g);color:var(--g);background:var(--g-dd)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.shell>section{min-width:0}
+.note{font-size:13px;color:var(--mu);margin:14px 0}
+.note a{color:var(--g)}
+.kv{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.kv code{font:12.5px var(--mono);background:#05080a;border:1px solid var(--line);padding:8px 12px;border-radius:8px;word-break:break-all}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--g);color:#0a0f00;font:600 13px var(--sans);padding:11px 20px;border-radius:10px;z-index:99;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+@media(max-width:980px){
+  .auth{grid-template-columns:1fr;gap:30px}
+  .shell{grid-template-columns:1fr}.side{position:static}
+  .stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:minmax(0,1fr)}
+  .nav-link{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="bar"><div class="in">
+  <a href="/" class="brand"><img src="/static/logo.png" alt="HOOK logo"> HOOK</a>
+  <span class="badge">Control Center</span>
+  <div class="sp"></div>
+  <a class="nav-link" href="/">Website</a>
+  <a class="nav-link" href="/docs" target="_blank" rel="noopener">API docs</a>
+  <div class="user hidden" id="userBox">
+    <button class="user-btn" id="userBtn" aria-haspopup="true"><span class="avatar" id="avatar">A</span><span id="userMail" style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span> ▾</button>
+    <div class="menu hidden" id="menu">
+      <div class="who"><small>SIGNED IN AS</small><span id="menuMail"></span></div>
+      <a href="/" >← Back to website</a>
+      <button class="out" id="logoutBtn">⎋ Log out</button>
+    </div>
+  </div>
+</div></header>
+
+<!-- AUTH -->
+<main id="authView" class="auth">
+  <div>
+    <div class="eyebrow">Admin authentication</div>
+    <h1>Catch AI attackers <span>in the act</span>.</h1>
+    <p class="sub">Create an account, generate an API key and see trapped agents in your profiler in minutes.</p>
+    <div class="perks"><div>API key for each protected app</div><div>Live attacker profiler & deception logs</div><div>Copy-paste SDK snippets with your key</div></div>
+  </div>
+  <div class="card auth-card">
+    <div class="seg"><button id="tabLogin" class="on">Login</button><button id="tabReg">Register</button></div>
+    <form id="authForm" autocomplete="on">
+      <div class="field"><label for="email">Email</label><input type="email" id="email" placeholder="admin@company.com" autocomplete="email" required></div>
+      <div class="field"><label for="password">Password</label><input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required><button type="button" class="eye" id="eye">SHOW</button></div>
+      <button class="btn primary" style="width:100%;padding:13px" id="authSubmit" type="submit">Login →</button>
+      <p class="err" id="err"></p>
+    </form>
+  </div>
+</main>
+
+<!-- APP -->
+<div id="appView" class="shell hidden">
+  <aside class="card side">
+    <h6>Projects</h6>
+    <div id="projList"></div>
+    <form class="newp" id="newProj">
+      <label for="pName">New project</label>
+      <input id="pName" placeholder="My production API" maxlength="100">
+      <button class="btn primary" type="submit">+ Create project</button>
+    </form>
+  </aside>
+
+  <section>
+    <div id="keyBanner" class="keybanner hidden">
+      <b>🔑 Your HOOK API key — save it now, it's shown only once.</b>
+      <div class="row"><code id="newKey"></code><button class="btn sm primary" id="copyKey">Copy key</button><button class="btn sm" id="closeKey">Dismiss</button></div>
+      <p style="margin-top:10px">Next step: open the <b>Integration</b> tab — snippets are already filled with this key.</p>
+    </div>
+
+    <div class="head">
+      <div><div class="eyebrow">Protected application</div><h2 id="projTitle">Select a project</h2></div>
+      <div class="kv" style="margin:0"><span class="mono" style="font-size:12px;color:var(--mu)">key prefix</span><code id="projPrefix">—</code></div>
+    </div>
+
+    <div class="stats">
+      <div class="card stat"><div class="n" id="sSessions">0</div><div class="l">Trapped sessions</div></div>
+      <div class="card stat"><div class="n" id="sLoops">0</div><div class="l">Total loop steps</div></div>
+      <div class="card stat"><div class="n" id="sAgents">0</div><div class="l">Attack types seen</div></div>
+      <div class="card stat"><div class="n" id="sDeep">0</div><div class="l">Deepest loop</div></div>
+    </div>
+
+    <div class="card">
+      <div class="tabs" id="tabs">
+        <button data-p="profiler" class="on">🎣 Attacker profiler</button>
+        <button data-p="integrate">⚡ Integration</button>
+      </div>
+
+      <div class="pane" id="pane-profiler">
+        <div class="toolbar">
+          <input id="search" placeholder="Filter by IP, agent or type…">
+          <button class="btn sm" id="refresh">↻ Refresh</button>
+          <label class="switch" style="margin:0;text-transform:none;letter-spacing:0;font-family:var(--sans)"><input type="checkbox" id="auto" checked> <span class="dot live"></span> Live (5s)</label>
+          <span class="sp"></span><span class="mono" style="font-size:11px;color:var(--mu2)" id="updated"></span>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Attacker IP</th><th>AI agent signature</th><th>Type</th><th>Loop</th><th>Time</th><th>Deception log (fake ports, IPs & DB)</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table></div>
+      </div>
+
+      <div class="pane hidden" id="pane-integrate">
+        <div class="grid2">
+          <div>
+            <div class="kv"><span class="mono" style="font-size:12px;color:var(--mu)">Endpoint</span><code id="epCode"></code><button class="btn sm" id="copyEp">Copy</button></div>
+            <div class="kv"><span class="mono" style="font-size:12px;color:var(--mu)">API key</span><code id="keyShown">—</code></div>
+            <p class="note" id="keyNote"></p>
+            <label>Install the SDK</label>
+            <div class="kv"><code>pip install hook-sec</code><code>npm i hooksec</code></div>
+            <p class="note">1. Install the SDK &nbsp;2. Paste the snippet with your key &nbsp;3. Deploy &nbsp;4. Open the <b>Verify</b> tab and probe your app — a session shows up in the profiler.</p>
+            <div class="kv"><a class="btn sm" href="/docs" target="_blank" rel="noopener">API reference</a></div>
+          </div>
+          <div>
+            <div class="codehead" id="snipTabs">
+              <button class="chipb on" data-s="py">Python</button><button class="chipb" data-s="node">Node</button><button class="chipb" data-s="env">.env</button><button class="chipb" data-s="verify">Verify</button>
+              <span class="sp"></span><button class="btn sm" id="copySnip">Copy</button>
+            </div>
+            <pre class="code" id="snip"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const ORIGIN = location.origin, ENDPOINT = ORIGIN + '/v1/hook/trap';
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k){ try{ return localStorage.getItem(k) }catch{ return null } },
+  set(k,v){ try{ localStorage.setItem(k,v) }catch{} },
+  del(k){ try{ localStorage.removeItem(k) }catch{} }
+};
+const keys = {   // full API keys are only known right after creation → keep in this browser tab only
+  get(id){ try{ return sessionStorage.getItem('hook_key_'+id) }catch{ return null } },
+  set(id,v){ try{ sessionStorage.setItem('hook_key_'+id,v) }catch{} }
+};
+let user = null, projects = [], selected = null, sessions = [], mode = 'login', timer = null, snipTab = 'py';
+
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
+async function copy(text){ try{ await navigator.clipboard.writeText(text); toast('Copied ✓'); }catch{ toast('Copy failed — select manually'); } }
+async function api(path, opt){
+  opt = opt || {}; opt.headers = Object.assign({}, opt.headers || {});
+  if(user && user.token) opt.headers['Authorization'] = 'Bearer ' + user.token;
+  const r = await fetch(path, opt); let d=null; try{ d = await r.json() }catch{}
+  if(r.status===401 && user && !path.startsWith('/v1/auth/')){ logout(); $('#err').textContent = 'Session expired — please log in again.'; }
+  return {ok:r.ok, status:r.status, data:d};
+}
+const detail = d => (d && typeof d.detail === 'string') ? d.detail : (d && Array.isArray(d.detail) ? d.detail.map(x=>x.msg).join(', ') : 'Something went wrong');
+
+/* ---------- auth ---------- */
+function setMode(m){
+  mode = m; $('#tabLogin').classList.toggle('on', m==='login'); $('#tabReg').classList.toggle('on', m==='register');
+  $('#authSubmit').textContent = m==='login' ? 'Login →' : 'Create account →';
+  $('#password').autocomplete = m==='login' ? 'current-password' : 'new-password'; $('#password').placeholder = m==='login' ? '••••••••' : 'min. 8 characters'; $('#err').textContent='';
+}
+$('#tabLogin').onclick = () => setMode('login'); $('#tabReg').onclick = () => setMode('register');
+$('#eye').onclick = () => { const p=$('#password'); const show=p.type==='password'; p.type = show?'text':'password'; $('#eye').textContent = show?'HIDE':'SHOW'; };
+
+async function doLogin(email, password){
+  const r = await api('/v1/auth/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password})});
+  if(!r.ok){ $('#err').textContent = detail(r.data); return false; }
+  user = r.data; store.set('hook_user', JSON.stringify(user)); enterApp(); return true;
+}
+$('#authForm').onsubmit = async e => {
+  e.preventDefault(); const email=$('#email').value.trim(), password=$('#password').value; $('#err').textContent='';
+  $('#authSubmit').disabled = true;
+  try{
+    if(mode==='register'){
+      const r = await api('/v1/auth/register', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password})});
+      if(!r.ok){ $('#err').textContent = detail(r.data); return; }
+      await doLogin(email,password);           // register → logged in right away
+    } else await doLogin(email,password);
+  } finally { $('#authSubmit').disabled = false; }
+};
+
+function logout(){
+  store.del('hook_user'); user=null; projects=[]; selected=null; sessions=[]; clearInterval(timer);
+  try{ sessionStorage.clear() }catch{}
+  $('#appView').classList.add('hidden'); $('#userBox').classList.add('hidden'); $('#menu').classList.add('hidden');
+  $('#authView').classList.remove('hidden'); $('#password').value=''; $('#keyBanner').classList.add('hidden');
+  setMode('login'); history.replaceState(null,'',location.pathname);
+}
+$('#logoutBtn').onclick = logout;
+$('#userBtn').onclick = e => { e.stopPropagation(); $('#menu').classList.toggle('hidden'); };
+document.addEventListener('click', e => { if(!e.target.closest('#userBox')) $('#menu').classList.add('hidden'); });
+
+function enterApp(){
+  $('#authView').classList.add('hidden'); $('#appView').classList.remove('hidden'); $('#userBox').classList.remove('hidden');
+  $('#userMail').textContent = user.email; $('#menuMail').textContent = user.email; $('#avatar').textContent = (user.email[0]||'A').toUpperCase();
+  loadProjects(); startTimer();
+}
+
+/* ---------- projects ---------- */
+async function loadProjects(){
+  const r = await api(`/v1/users/${user.user_id}/projects`);
+  projects = r.ok ? r.data : [];
+  if(selected && !projects.find(p=>p.id===selected)) selected=null;
+  if(!selected && projects.length) selected = projects[0].id;
+  renderProjects(); renderHead();
+  if(selected) loadSessions(); else { sessions=[]; renderSessions(); }
+}
+function renderProjects(){
+  $('#projList').innerHTML = projects.length ? projects.map(p=>`<button class="proj ${p.id===selected?'on':''}" data-id="${p.id}"><b>${esc(p.name)}</b><small>prefix: ${esc(p.prefix)}</small></button>`).join('')
+    : '<p class="empty">No projects yet. Create your first one below ↓</p>';
+  document.querySelectorAll('.proj').forEach(b=>b.onclick=()=>{ selected=+b.dataset.id; renderProjects(); renderHead(); loadSessions(); });
+}
+function curProject(){ return projects.find(p=>p.id===selected); }
+function renderHead(){
+  const p = curProject();
+  $('#projTitle').textContent = p ? p.name : 'Select a project';
+  $('#projPrefix').textContent = p ? p.prefix + '…' : '—';
+  renderIntegration();
+}
+$('#newProj').onsubmit = async e => {
+  e.preventDefault(); const name = $('#pName').value.trim(); if(!name) return;
+  const r = await api(`/v1/projects?user_id=${user.user_id}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})});
+  if(!r.ok){ toast(detail(r.data)); return; }
+  keys.set(r.data.project_id, r.data.api_key);
+  $('#newKey').textContent = r.data.api_key; $('#keyBanner').classList.remove('hidden'); $('#pName').value='';
+  selected = r.data.project_id; await loadProjects(); showTab('integrate');
+};
+$('#copyKey').onclick = () => copy($('#newKey').textContent);
+$('#closeKey').onclick = () => $('#keyBanner').classList.add('hidden');
+
+/* ---------- sessions ---------- */
+async function loadSessions(){
+  if(!selected) return;
+  const id = selected, r = await api(`/v1/projects/${id}/sandbox-sessions`);
+  if(id!==selected) return;
+  sessions = r.ok ? r.data : []; renderSessions();
+  $('#updated').textContent = 'updated ' + new Date().toLocaleTimeString();
+}
+function renderSessions(){
+  const q = $('#search').value.trim().toLowerCase();
+  const list = sessions.filter(s => !q || (s.ip||'').toLowerCase().includes(q) || (s.agent||'').toLowerCase().includes(q) || (s.type||'').toLowerCase().includes(q));
+  $('#sSessions').textContent = sessions.length;
+  $('#sLoops').textContent = sessions.reduce((a,s)=>a+(s.stage||0),0);
+  $('#sAgents').textContent = new Set(sessions.map(s=>s.type)).size;
+  $('#sDeep').textContent = sessions.reduce((a,s)=>Math.max(a,s.stage||0),0);
+  if(!selected){ $('#rows').innerHTML = `<tr><td colspan="6"><div class="placeholder"><b>No project selected</b>Create a project in the sidebar to start catching AI agents.</div></td></tr>`; return; }
+  if(!list.length){ $('#rows').innerHTML = `<tr><td colspan="6"><div class="placeholder"><b>${sessions.length?'No matches':'Sandbox is clean — no AI hackers caught yet'}</b>${sessions.length?'Try a different filter.':'Open the <b style="display:inline;color:var(--g)">Integration</b> tab to connect your app, then probe it with the <b style="display:inline;color:var(--g)">Verify</b> snippet.'}</div></td></tr>`; return; }
+  $('#rows').innerHTML = list.map(s => {
+    const lines = String(s.log||'').split('\n'), long = lines.length>3;
+    const short = long ? '… ' + (lines.length-3) + ' earlier step(s)\n' + lines.slice(-3).join('\n') : s.log;
+    return `<tr><td class="ip">${esc(s.ip)}</td><td><div class="ua" title="${esc(s.agent)}">${esc(s.agent)}</div></td><td><span class="atype ${esc(s.type)}">${esc(String(s.type).replace('_',' '))}</span>${s.tarpit?` <span class="tp" title="Flood detected — slowed down, never blocked (level ${esc(s.tarpit)})">🕸 ${esc(s.tarpit)}</span>`:''}</td><td><span class="loop">Loop #${esc(s.stage)}</span></td><td class="mono" style="font-size:12px;color:var(--mu)">${esc(s.time)}</td>
+      <td><div class="log" data-full="${esc(s.log)}" data-short="${esc(short)}">${esc(short)}</div>${long?'<button class="more">show all</button>':''}</td></tr>`;
+  }).join('');
+  document.querySelectorAll('.more').forEach(b=>b.onclick=()=>{ const l=b.previousElementSibling; const open=b.textContent==='show all'; l.textContent = open?l.dataset.full:l.dataset.short; b.textContent = open?'collapse':'show all'; });
+}
+$('#search').oninput = renderSessions; $('#refresh').onclick = loadSessions;
+function startTimer(){ clearInterval(timer); timer = setInterval(()=>{ if($('#auto').checked && user && !document.hidden) loadSessions(); }, 5000); }
+
+/* ---------- tabs ---------- */
+function showTab(t){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b.dataset.p===t));
+  ['profiler','integrate'].forEach(n=>$('#pane-'+n).classList.toggle('hidden', n!==t));
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.p));
+
+/* ---------- integration ---------- */
+function snippets(key){
+  const k = esc(key), ep = esc(ENDPOINT);
+  return {
+py:`<span class="c"># pip install hook-sec fastapi httpx</span>
+<span class="k">from</span> fastapi <span class="k">import</span> FastAPI
+<span class="k">from</span> hook_sdk <span class="k">import</span> HookSecurityMiddleware
+
+app = FastAPI()
+app.add_middleware(
+    HookSecurityMiddleware,
+    api_key=<span class="s">"${k}"</span>,
+    hook_cloud_endpoint=<span class="s">"${ep}"</span>,
+)
+
+<span class="c"># Optional: extra_trap_paths=["/wp-login.php"], extra_signatures=["sqlmap"],</span>
+<span class="c">#           trust_proxy_headers=True  (behind a load balancer)</span>`,
+node:`<span class="c">// npm i hooksec</span>
+<span class="k">const</span> express = require(<span class="s">'express'</span>);
+<span class="k">const</span> { hookMiddleware } = require(<span class="s">'hooksec'</span>);
+
+<span class="k">const</span> app = express();
+app.use(hookMiddleware({
+  apiKey: process.env.HOOK_API_KEY,      <span class="c">// ${k.length>40?'set it to your key':'your key'}</span>
+  cloudEndpoint: <span class="s">"${ep}"</span>,
+}));
+
+app.listen(3000);`,
+env:`<span class="c"># .env — keep secrets out of source control</span>
+HOOK_API_KEY=${k}
+HOOK_ENDPOINT=${ep}
+
+<span class="c"># Python SDK v2 reads both automatically:</span>
+<span class="c">#   app.add_middleware(HookSecurityMiddleware)</span>`,
+verify:`<span class="c"># Probe YOUR protected app the way a bot would</span>
+<span class="c"># (curl is a default bot signature, /.env a default trap path)</span>
+curl -i https://your-app.example.com/.env
+curl -i <span class="s">"https://your-app.example.com/api/v2/internal/exec?cmd=id"</span>
+
+<span class="c"># Then open the Attacker profiler tab:</span>
+<span class="c"># a new session appears within seconds.</span>`
+  };
+}
+function renderIntegration(){
+  const p = curProject(), full = p ? keys.get(p.id) : null;
+  const key = full || (p ? p.prefix + '…_YOUR_FULL_KEY' : 'hook_YOUR_API_KEY');
+  $('#epCode').textContent = ENDPOINT;
+  $('#keyShown').textContent = key;
+  $('#keyNote').innerHTML = !p ? 'Select or create a project to get its key.' : full ? 'Snippets use the key created in this session.' : 'Full keys are shown only once, at creation (stored hashed). Replace the placeholder with your saved key — or create a new project to get a fresh one.';
+  $('#snip').innerHTML = snippets(key)[snipTab];
+  document.querySelectorAll('#snipTabs .chipb').forEach(b=>b.classList.toggle('on', b.dataset.s===snipTab));
+}
+document.querySelectorAll('#snipTabs .chipb').forEach(b=>b.onclick=()=>{ snipTab=b.dataset.s; renderIntegration(); });
+$('#copySnip').onclick = () => copy($('#snip').textContent);
+$('#copyEp').onclick = () => copy(ENDPOINT);
+
+/* ---------- boot ---------- */
+(function boot(){
+  if(location.hash === '#register') setMode('register');
+  let saved = null; try{ saved = JSON.parse(store.get('hook_user')||'null') }catch{}
+  if(saved && saved.user_id){ user = saved; enterApp(); }
+})();
+</script>
+</body>
+</html>
